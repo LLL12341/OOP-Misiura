@@ -1,130 +1,184 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq; // Потрібен для зручних обчислень (Sum, Average)
+using System.Linq;
+using System.Text;
 
-namespace lab4v11
+namespace Lab4_ShoppingCart
 {
-    // --- 1. Інтерфейс (Контракт) ---
-    // Кожен товар зобов'язаний мати Ціну та Назву
+    // ==========================================
+    // 1. ІНТЕРФЕЙС
+    // ==========================================
+    // Визначає контракт: кожен товар повинен мати Ім'я, Ціну та метод опису.
     public interface IProduct
     {
         string Name { get; }
-        double Price { get; }
+        decimal Price { get; }
         string GetInfo();
     }
 
-    // --- 2. Абстрактний клас ---
-    // Базова реалізація для уникнення дублювання коду
+    // ==========================================
+    // 2. АБСТРАКТНИЙ КЛАС
+    // ==========================================
+    // Реалізує базову логіку, щоб не дублювати код (DRY principle).
     public abstract class BaseProduct : IProduct
     {
-        public string Name { get; protected set; }
-        public double Price { get; protected set; }
+        public string Name { get; set; }
+        public decimal Price { get; set; }
 
-        public BaseProduct(string name, double price)
+        public BaseProduct(string name, decimal price)
         {
             Name = name;
             Price = price;
         }
 
+        // Абстрактний метод: конкретна реалізація буде у класах-спадкоємцях
         public abstract string GetInfo();
     }
 
-    // --- 3. Реалізація: Продукти харчування ---
+    // ==========================================
+    // 3. КОНКРЕТНІ РЕАЛІЗАЦІЇ (КЛАСИ)
+    // ==========================================
+
+    // Клас Їжа
     public class Food : BaseProduct
     {
-        public double WeightKg { get; set; } // Вага в кг
+        public DateTime ExpirationDate { get; set; }
 
-        public Food(string name, double price, double weight) : base(name, price)
+        public Food(string name, decimal price, DateTime expirationDate) 
+            : base(name, price)
         {
-            WeightKg = weight;
+            ExpirationDate = expirationDate;
         }
 
         public override string GetInfo()
         {
-            return $"🍎 Їжа: {Name} ({WeightKg} кг) - {Price} грн";
+            return $"[Їжа] {Name} — {Price} грн (Вжити до: {ExpirationDate.ToShortDateString()})";
         }
     }
 
-    // --- 4. Реалізація: Одяг ---
+    // Клас Одяг
     public class Clothes : BaseProduct
     {
-        public string Size { get; set; } // Розмір (S, M, L...)
+        public string Size { get; set; }
+        public string Material { get; set; }
 
-        public Clothes(string name, double price, string size) : base(name, price)
+        public Clothes(string name, decimal price, string size, string material) 
+            : base(name, price)
         {
             Size = size;
+            Material = material;
         }
 
         public override string GetInfo()
         {
-            return $"👕 Одяг: {Name} (Розмір: {Size}) - {Price} грн";
+            return $"[Одяг] {Name} — {Price} грн (Розмір: {Size}, Тканина: {Material})";
         }
     }
 
-    // --- 5. Клас Кошик (Агрегація / Обчислення) ---
+    // ==========================================
+    // 4. КОШИК ТОВАРІВ (АГРЕГАЦІЯ)
+    // ==========================================
+    // Цей клас містить колекцію продуктів. Це зв'язок "має" (Has-a).
     public class ShoppingCart
     {
-        // Агрегація: Кошик МІСТИТЬ список IProduct
-        private List<IProduct> _items = new List<IProduct>();
+        // Список типу інтерфейсу дозволяє зберігати і Food, і Clothes разом
+        private List<IProduct> _products;
 
-        public void AddToCart(IProduct product)
+        public ShoppingCart()
         {
-            _items.Add(product);
-            Console.WriteLine($"[+] Додано до кошика: {product.Name}");
+            _products = new List<IProduct>();
         }
 
-        public void PrintReceipt()
+        public void AddProduct(IProduct product)
         {
-            Console.WriteLine("\n--- Вміст кошика ---");
-            foreach (var item in _items)
+            _products.Add(product);
+            Console.WriteLine($"-> Додано в кошик: {product.Name}");
+        }
+
+        public void RemoveProduct(IProduct product)
+        {
+            _products.Remove(product);
+            Console.WriteLine($"<- Видалено з кошика: {product.Name}");
+        }
+
+        public void ShowCart()
+        {
+            Console.WriteLine("\n=== Вміст Вашого кошика ===");
+            if (_products.Count == 0)
             {
-                Console.WriteLine(item.GetInfo());
+                Console.WriteLine("Кошик порожній.");
             }
+            else
+            {
+                foreach (var item in _products)
+                {
+                    Console.WriteLine(item.GetInfo());
+                }
+            }
+            Console.WriteLine("===========================\n");
         }
 
-        // Обчислення 1: Сума замовлення
-        public double GetTotalSum()
+        // Обчислення суми
+        public decimal CalculateTotal()
         {
-            return _items.Sum(item => item.Price);
+            return _products.Sum(p => p.Price);
         }
 
-        // Обчислення 2: Середня ціна
-        public double GetAveragePrice()
+        // Обчислення середньої ціни
+        public decimal CalculateAveragePrice()
         {
-            if (_items.Count == 0) return 0;
-            return _items.Average(item => item.Price);
+            if (_products.Count == 0) return 0;
+            return CalculateTotal() / _products.Count;
         }
     }
 
+    // ==========================================
+    // 5. ГОЛОВНА ПРОГРАМА
+    // ==========================================
     class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("=== Lab 4: Shopping Cart (Variant 11) ===\n");
+            // Налаштування кодування для коректного відображення кирилиці
+            Console.OutputEncoding = Encoding.UTF8;
 
-            // Створення кошика
+            Console.WriteLine("Лабораторна робота №4: Інтерфейси та Агрегація\n");
+
+            // 1. Створення екземпляра кошика
             ShoppingCart myCart = new ShoppingCart();
 
-            // Створення товарів
-            Food apple = new Food("Яблука Голден", 35.50, 1.5);
-            Food bread = new Food("Хліб Житній", 24.00, 0.5);
+            // 2. Створення товарів
+            // Ми можемо використовувати var, BaseProduct або IProduct для змінних
+            var apples = new Food("Яблука Голден", 25.50m, DateTime.Now.AddDays(10));
+            var bread = new Food("Хліб Бородинський", 18.00m, DateTime.Now.AddDays(2));
             
-            Clothes tShirt = new Clothes("Футболка Nike", 850.00, "M");
-            Clothes jeans = new Clothes("Джинси Levi's", 2200.00, "32/34");
+            var tshirt = new Clothes("Футболка Print", 450.00m, "L", "Бавовна");
+            var jeans = new Clothes("Джинси Classic", 1200.00m, "32/34", "Денім");
 
-            // Додавання товарів (Агрегація)
-            myCart.AddToCart(apple);
-            myCart.AddToCart(bread);
-            myCart.AddToCart(tShirt);
-            myCart.AddToCart(jeans);
+            // 3. Додавання товарів у кошик
+            myCart.AddProduct(apples);
+            myCart.AddProduct(bread);
+            myCart.AddProduct(tshirt);
+            myCart.AddProduct(jeans);
 
-            // Вивід чеку
-            myCart.PrintReceipt();
+            // 4. Вивід інформації
+            myCart.ShowCart();
 
-            // Виконання обчислень
-            Console.WriteLine("\n--- Фінансовий звіт ---");
-            Console.WriteLine($"Загальна сума замовлення: {myCart.GetTotalSum():F2} грн");
-            Console.WriteLine($"Середня ціна товару:      {myCart.GetAveragePrice():F2} грн");
+            // 5. Демонстрація обчислень
+            decimal total = myCart.CalculateTotal();
+            decimal average = myCart.CalculateAveragePrice();
+
+            Console.WriteLine($"Загальна вартість замовлення: {total} грн");
+            Console.WriteLine($"Середня вартість товару:      {Math.Round(average, 2)} грн");
+
+            // 6. Приклад видалення
+            Console.WriteLine("\n[Видаляємо хліб...]");
+            myCart.RemoveProduct(bread);
+            
+            Console.WriteLine($"Нова загальна вартість:       {myCart.CalculateTotal()} грн");
+
+            Console.WriteLine("\nНатисніть будь-яку клавішу для виходу...");
+            Console.ReadKey();
         }
     }
 }
