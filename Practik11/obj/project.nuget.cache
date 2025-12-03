@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "v21bU33jytw=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Администратор\\Desktop\\OOP-Misiura\\Practik11\\Practik11.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Администратор\\.nuget\\packages\\polly\\8.6.5\\polly.8.6.5.nupkg.sha512",
+    "C:\\Users\\Администратор\\.nuget\\packages\\polly.core\\8.6.5\\polly.core.8.6.5.nupkg.sha512"
+  ],
+  "logs": []
+}

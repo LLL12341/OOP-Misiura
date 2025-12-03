@@ -1,0 +1,6 @@
+C:\Users\Администратор\Desktop\OOP-Misiura\Practik11\obj\Debug\net9.0\Practik11.csproj.AssemblyReference.cache
+C:\Users\Администратор\Desktop\OOP-Misiura\Practik11\obj\Debug\net9.0\Practik11.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Администратор\Desktop\OOP-Misiura\Practik11\obj\Debug\net9.0\Practik11.AssemblyInfoInputs.cache
+C:\Users\Администратор\Desktop\OOP-Misiura\Practik11\obj\Debug\net9.0\Practik11.AssemblyInfo.cs
+C:\Users\Администратор\Desktop\OOP-Misiura\Practik11\obj\Debug\net9.0\Practik11.csproj.CoreCompileInputs.cache
+C:\Users\Администратор\Desktop\OOP-Misiura\Practik11\obj\Debug\net9.0\Practik11.sourcelink.json
