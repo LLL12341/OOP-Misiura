@@ -44,3 +44,4 @@
 | **International**| `(distance * 5.0 + weight * 2.0) + 15% tax`          |
 | **Night** | `(Standard Rate) + 100` (Додано через розширення)    |
 
+![alt text](image.png)
